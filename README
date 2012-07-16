@@ -1,12 +1,11 @@
-Four4s problem can be used to learn/teach many of the concepts in computer science:
+Four4s (http://en.wikipedia.org/wiki/Four_fours) problem can be used to learn/teach many of the concepts in computer science:
 
-1) Writing a program to generate expressions for all numbers in a range (for example 1-50) turned out 
-to be an interesting exercise. We need to build up complex expressions from the simpler ones as follows:
+1) Writing a program to generate expressions for all numbers in a range (for example 1-50) turned out to be an interesting exercise. We need to build up complex expressions from the simpler ones as follows:
 
    a.  Simplest expressions: 
 
-       First create all expressions of the form: B(1) = { .4, 4.}, B(2) = { .44, 
-4.4, 44. } etc., B(4)  = { .4444, ... , 4444.} 
+       First create all expressions of the form: B(1) = { .4, 4.}, B(2) = { .44, 4.4, 44. } etc., B(4)  = { .4444, ... , 4444.} 
+
        Here B(n) stands for an expressions with no operations and no functions applied to a list of n 4?s. Only decimal point is allowed.
 
    b.  Next simple expressions: 

@@ -1,0 +1,102 @@
+Four4s problem can be used to learn/teach many of the concepts in computer 
+science:
+1)       Writing a program to generate expressions for all numbers in a range (for example 1-50) turned out 
+to be an interesting exercise. We need to build up complex expressions from the simpler ones as follows:
+a.       Simplest expressions: First create all expressions of the form: B(1) = { .4, 4.}, B(2) = { .44, 
+4.4, 44. } etc., B(4)  = { .4444, ?, 4444.} ? Here B(n) stands for an expressions with no 
+operations and no functions applied to a list of n 4?s. Only decimal point is allowed.
+b.       Next simple expressions: Create all expressions that apply unary functions (like factorial, 
+sqrt) to B(n)  as well as to the results of first application so as to get expressions like sqrt(fact(4)) 
+etc.,
+                                                               i.      U(n) = B(n) UNION { OP1(U(n)) | OP1 is one of factorial, 
+sqrt etc.,}
+                                                             ii.      Here U(n) represents all B(n) and other expressions we 
+can get by applying unary operations (like !, sqrt) and having n 4?s in the expression
+                                                            iii.      Note that this leads to infinite recursion: for example ? 
+fact(fact(fact(???.(4)))). We can stop after x number of applications of OP1 to any U(n)
+c.       Finally Complex expressions: Create expressions that apply binary operations (+, *, /, -) to 
+U(n) and to the results of first application. Call them S(opc, n). Each S has opc number of binary 
+operators (like +, /) and a total of n 4?s in the expression. An example from the set S(2, 4) is 
+44.+4.-4. Note that opc < n to create a valid expression.
+                                                               i.      S(0, n) = U(n)
+                                                             ii.      S(1, n) = { S(0, k1) OP2 S(0, k2) | for all k1, k2 such that 
+k1+k2 = n and n > 1 and OP2 is one of +, -, /, *, exponent etc.,}
+                                                            iii.      For all opc > 1:  S(opc, n) = { S(m, k1) OP2 S(opc-1-m, 
+k2) | m = 0, 1, ? opc-1 and opc >= 2 and OP2 is one of +, -, /, *, etc.,}
+                                                            iv.      We again have to stop after x applications to avoid into 
+infinite recursion.
+                                                              v.      If we want to allow parentheses to change the default 
+order of computation, then we need to consider those expressions also in the above 
+S(opc, n) computation.  I could not generate expressions for values 35, 41 (in the range 
+1-100) without using parenthesized expressions.
+2)       The above program is in general going to be slow. So, here the optimization is must before we can 
+make use of it (after a subset of optimizations, the program ran lot faster - under 2 minutes for range 1-50. 
+Of course, 2 minutes is still slow). Few things we can do:
+a.       Stop application of unary/binary operations after 1 application (x=1)
+b.       Write custom factorial and sqrt functions instead of depending on the compiler provided 
+ones: So that you can stop evaluating an expression when the factorial value exceeds a set limit 
+or if the argument for factorial is not integer or when the argument to sqrt is ?ve reject the 
+corresponding expression
+c.       Do not use recursive function to compute factorial: fact(n) { if n == 1: return 1 else return n * 
+fact(n-1)}. Here you will be computing fact(x) again and again. Use a table of pre computed 
+factorials.
+d.       When building complex expressions from simpler ones, reuse the simpler expressions 
+instead of creating them again and again
+e.       Create custom expression evaluator to stop as soon as we know that the value is going to 
+be too big for the desired range (in this example, 1-50).
+f.         Instead of trying all generated expressions to find the possible expressions for a given 
+number (say 34) -
+      ? Evaluate each expression and maintain a hashtable of (key, value) = (value of expression, array 
+of expressions that produce this value)
+ 
+3)       Some enhancements: Each value can have a lot of expressions that can generate it. By giving a 
+complexity score to each of unary/binary operations and decimal point, we can assign an overall 
+complexity score to each expression and keep only the ones with low score. For example for value 1 we 
+prefer expression 44/44 over expression 4.4/4.4 or factorial(44)/ factorial(44).
+4)       Interesting CS things:
+a.       Recursive functions ? recursive application of operators to simple expressions to generate 
+complex ones ? parse trees that get generated out of expressions, etc.,
+b.       Recursive function theory: Without stopping repeated application of operators, each of the 
+sets U, S will keep on generating until infinity - the theory of recursive functions and recursively 
+enumerable functions.
+c.       Dynamic programming: Reuse of generated values (for example in computing a table of 
+factorials) and expressions (while building complex ones from simple ones) ? many of dynamic 
+programming techniques can be taught just from this.
+d.       Algorithm design: Need for brute-force algorithms (until a mathematician finds a formula to 
+auto-generate the expression(s) for a given value), optimization, back-tracking etc
+e.       Practical aspects of developing complex software applications ?for example need to assign 
+complexity score to answers and pick the best ones based on prioritization
+ 
+A python script that demonstrates some of above things (it is ugly ? wrote just to validate above points) is 
+attached. Here is some excerpt from the output:
+ 
+1 --->
+            .44/.44
+            4.4/4.4
+            44./44.
+            fact(44.)/fact(44.)
+            mysqrt(.44)/mysqrt(.44)
+ 
+?
+ 
+35 --->
+            (.4+4.)/.4+fact(4.)
+            (4.+.4)/.4+fact(4.)
+            (4.+fact(4.))/(.4+.4)
+            (4.+fact(4.))/(.4*mysqrt(4.))
+ 
+?
+ 
+41 --->
+            (fact(4.)+mysqrt(4.))/.4-fact(4.)
+            (mysqrt(4.)+fact(4.))/.4-fact(4.)
+ 
+?
+ 
+ 
+47 --->
+            fact(4.)+fact(4.)-.4/.4
+ 
+?
+
+
